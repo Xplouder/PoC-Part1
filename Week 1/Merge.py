@@ -12,32 +12,16 @@ def merge(line):
 
     newline = list(line)
 
-    while True:
-        do_while_stop_flag = False
-        element = -1
-        index_temp = -1
+    while can_shift(newline):
+        newline = shift(newline)
 
-        for index in range(len(newline)):
-            if newline[index] == 0:
-                if need_shift(index, newline):
-                    # shift array and append a zero
-                    newline = shift(index, newline)
-                    break
-            else:
-                if element == newline[index]:
-                    # merge elements, shift array and append a zero
-                    newline[index_temp] *= 2
-                    newline = shift(index, newline)
-                    break
-                else:
-                    element = newline[index]
-                    index_temp = index
-
-            if index == len(newline) - 1:
-                do_while_stop_flag = not can_merge(newline)
-
-        if do_while_stop_flag:
-            break
+    for index in range(len(newline)):
+        if index + 1 < len(newline):
+            if newline[index] != 0 and newline[index] == newline[
+                        index + 1] != 0:
+                newline[index] *= 2
+                newline[index + 1] = 0
+                newline = shift(newline)
 
     return newline
 
@@ -61,31 +45,54 @@ def can_merge(line):
     return False
 
 
-def need_shift(index, array):
+def can_shift(array):
     """
-    Function that informs if shift is necessary i.e. there is a number different
-    from zero after the index position
+    Function that informs if the array can be shifted
     :param array: elements list
-    :param index: position from where we want to shift
     :return: boolean
     """
-    result = False
+
+    has_first_non_zero = False
+    first_non_zero_index = -1
+    has_consecutive_zero = False
+    has_last_non_zero = False
+
     for i in range(len(array)):
-        if i > index:
-            result |= array[i] != 0
+        if array[i] != 0:
+            if not has_first_non_zero:
+                has_first_non_zero = True
+                first_non_zero_index = i
+                continue
+            if has_consecutive_zero:
+                has_last_non_zero = True
+        else:
+            if first_non_zero_index < i:
+                has_consecutive_zero = True
 
-    return result
+        if has_first_non_zero and has_consecutive_zero and has_last_non_zero:
+            return True
+
+    return False
 
 
-def shift(index, array):
+def shift(array):
     """
     Function that remove the element from array index position and append a zero
     :param array: elements list
-    :param index: position from where we want to shift
     :return: new array of elements after the shift
     """
-    if 0 <= index <= len(array) - 1:
-        array = array[0:index] + array[index + 1:len(array)]
-        array.append(0)
 
+    has_first_non_zero = False
+    first_non_zero_index = -1
+
+    for i in range(len(array)):
+        if array[i] != 0:
+            if not has_first_non_zero:
+                has_first_non_zero = True
+                first_non_zero_index = i
+                continue
+        else:
+            if first_non_zero_index < i:
+                array = array[0:i] + array[i + 1:len(array)]
+                array.append(0)
     return array

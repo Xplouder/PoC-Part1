@@ -8,6 +8,7 @@ import Merge
 
 
 class MyTestCase(unittest.TestCase):
+
     def test_merge_case1(self):
         self.assertSequenceEqual(Merge.merge([2, 0, 2, 4]), [4, 4, 0, 0])
 
@@ -28,6 +29,21 @@ class MyTestCase(unittest.TestCase):
 
     def test_merge_case7(self):
         self.assertSequenceEqual(Merge.merge([2, 0, 2, 2]), [4, 2, 0, 0])
+
+    def test_merge_case8(self):
+        self.assertSequenceEqual(Merge.merge([0, 2]), [2, 0])
+
+    # --------------------------------------------------------------------------
+
+    def test_can_shift(self):
+        self.assertTrue(Merge.can_shift([2, 0, 2, 4]))
+        self.assertTrue(Merge.can_shift([0, 0, 2, 2]))
+        self.assertFalse(Merge.can_shift([2, 2, 0, 0]))
+        self.assertFalse(Merge.can_shift([2, 2, 2, 2, 2]))
+        self.assertFalse(Merge.can_shift([8, 16, 16, 8]))
+        self.assertFalse(Merge.can_shift([4, 4, 8]))
+        self.assertTrue(Merge.can_shift([2, 0, 2, 2]))
+        self.assertTrue(Merge.can_shift([0, 2]))
 
 
 if __name__ == '__main__':
