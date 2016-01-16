@@ -9,10 +9,8 @@ def merge(line):
     :param line: array with elements
     :return: new array of elements after the merge operation
     """
-    newline = list(line)
 
-    while can_shift(newline):
-        newline = shift(newline)
+    newline = shift(list(line))
 
     for index in range(len(newline)):
         if index + 1 < len(newline):
@@ -27,39 +25,26 @@ def merge(line):
 
 def shift(array):
     """
-    Function that remove the zeros and shift the right side to one left position
-    and also append the removed 0 at the end
+    Function that remove the zeros from array after it append them at the end
     :param array: elements list
     :return: new array of elements after the shift
     """
 
-    has_first_non_zero = False
-    first_non_zero_index = -1
+    total_zeros_counter = 0
 
-    for index in range(len(array)):
-        if array[index] != 0:
-            if not has_first_non_zero:
-                has_first_non_zero = True
-                first_non_zero_index = index
-                continue
-        else:
-            if first_non_zero_index < index:
-                array = array[0:index] + array[index + 1:len(array)]
-                array.append(0)
+    while True:
+        zeros_counter = 0
+        for index in range(len(array)):
+            if array[index] == 0:
+                del array[index]
+                zeros_counter += 1
+                break
+        total_zeros_counter += zeros_counter
+
+        if zeros_counter == 0:
+            break
+
+    for index in range(total_zeros_counter):
+        array.append(0)
+
     return array
-
-
-def can_shift(array):
-    """
-    Function that informs if the array can be shifted
-    :param array: elements list
-    :return: boolean
-    """
-
-    for index in range(len(array)):
-        # limit protection
-        if index - 1 >= 0:
-            if array[index] != 0 and array[index - 1] == 0:
-                return True
-
-    return False
