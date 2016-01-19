@@ -14,10 +14,7 @@ RIGHT = 4
 
 # Offsets for computing tile indices in each direction.
 # DO NOT MODIFY this dictionary.
-OFFSETS = {UP: (1, 0),
-           DOWN: (-1, 0),
-           LEFT: (0, 1),
-           RIGHT: (0, -1)}
+OFFSETS = {UP: (1, 0), DOWN: (-1, 0), LEFT: (0, 1), RIGHT: (0, -1)}
 
 
 def merge(line):
@@ -75,17 +72,21 @@ class TwentyFortyEight:
     def __init__(self, grid_height, grid_width):
         self.height = grid_height
         self.width = grid_width
-        self.grid = [[0 for col in range(self.width)]
-                     for row in range(self.height)]
+        self.grid = None
+        self.reset()
 
     def reset(self):
         """
         Reset the game so the grid is empty except for two
         initial tiles.
         """
+        self.grid = [[0] * self.width for _ in range(self.height)]
         for row in range(self.height):
             for col in range(self.width):
                 self.grid[row][col] = 0
+
+        self.new_tile()
+        self.new_tile()
 
     def __str__(self):
         """
@@ -139,20 +140,16 @@ class TwentyFortyEight:
         random_num = random.randint(0, 10)
         new_tile_value = 4 if random_num > 9 else 2
 
-        grid_values = []
-        for row in range(self.height):
-            for col in range(self.width):
-                grid_values.append(self.grid[row][col])
-
         rand_tile_column_idx = random.randrange(0, self.width)
         rand_tile_row_idx = random.randrange(0, self.height)
-        rand_tile = self.grid[rand_tile_row_idx][rand_tile_column_idx]
+        rand_tile = self.get_tile(rand_tile_row_idx, rand_tile_column_idx)
+
         while rand_tile != 0:
             rand_tile_column_idx = random.randrange(0, self.width)
             rand_tile_row_idx = random.randrange(0, self.height)
-            rand_tile = self.grid[rand_tile_row_idx][rand_tile_column_idx]
+            rand_tile = self.get_tile(rand_tile_row_idx, rand_tile_column_idx)
 
-        self.grid[rand_tile_row_idx][rand_tile_column_idx] = new_tile_value
+        self.set_tile(rand_tile_row_idx, rand_tile_column_idx, new_tile_value)
 
     def set_tile(self, row, col, value):
         """
