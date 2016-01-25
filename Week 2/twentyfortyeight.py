@@ -4,8 +4,6 @@ Clone of 2048 game.
 
 import random
 
-import poc_2048_gui
-
 # Directions, DO NOT MODIFY
 UP = 1
 DOWN = 2
@@ -64,71 +62,133 @@ def shift(array):
     return array
 
 
+def to_right(vector):
+    """
+    Anchor non zero numbers in a MERGED vector to the right side
+    :param vector: initial vector
+    :return: vector with non zeros at right side
+    """
+    if has_non_zero(vector):
+        new_vector = list(vector)
+        while new_vector[0] != 0:
+            aux = new_vector.pop(0)
+            new_vector.append(aux)
+        return new_vector
+    return vector
+
+
+def has_non_zero(vector):
+    """
+    Returns saying if the input vector has an element > 0
+    :param vector: initial vector
+    :return: condition result
+    """
+    if len(vector) == 0:
+        return False
+
+    for elem in vector:
+        if elem != 0:
+            return True
+
+    return False
+
+
+def rotate_cw_matrix(matrix):
+    """
+    Rotate matrix clockwise
+    :param matrix: input matrix
+    :return: rotated matrix
+    """
+    aux = zip(*matrix[::-1])
+    return [list(row) for row in aux]
+
+
+def rotate_ccw_matrix(matrix):
+    """
+    Rotate matrix counter clockwise
+    :param matrix: input matrix
+    :return: rotated matrix
+    """
+    aux = zip(*matrix)[::-1]
+    return [list(row) for row in aux]
+
+
 class TwentyFortyEight:
     """
     Class to run the game logic.
     """
 
     def __init__(self, grid_height, grid_width):
-        self.height = grid_height
-        self.width = grid_width
-        self.grid = None
+        self._height = grid_height
+        self._width = grid_width
+        self._grid = None
         self.reset()
 
     def reset(self):
         """
-        Reset the game so the grid is empty except for two
+        Reset the game so the _grid is empty except for two
         initial tiles.
         """
-        self.grid = [[0] * self.width for _ in range(self.height)]
-        for row in range(self.height):
-            for col in range(self.width):
-                self.grid[row][col] = 0
+        self._grid = [[0] * self._width for _ in range(self._height)]
+        for row in range(self._height):
+            for col in range(self._width):
+                self._grid[row][col] = 0
 
         self.new_tile()
         self.new_tile()
 
     def __str__(self):
         """
-        Return a string representation of the grid for debugging.
+        Return a string representation of the _grid for debugging.
         """
         result = "["
-        for row in range(self.height):
+        for row in range(self._height):
             if row == 0:
-                result += str(self.grid[row]) + "\n"
-            elif row == self.height - 1:
-                result += " " + str(self.grid[row]) + "]"
+                result += str(self._grid[row]) + "\n"
+            elif row == self._height - 1:
+                result += " " + str(self._grid[row]) + "]"
             else:
-                result += " " + str(self.grid[row]) + "\n"
+                result += " " + str(self._grid[row]) + "\n"
         return result
 
     def get_grid_height(self):
         """
-        Get the height of the board.
+        Get the _height of the board.
         """
-        return self.height
+        return self._height
 
     def get_grid_width(self):
         """
-        Get the width of the board.
+        Get the _width of the board.
         """
-        return self.width
+        return self._width
 
     def move(self, direction):
         """
         Move all tiles in the given direction and add a new tile if any
         tiles moved.
-        :param direction: direction of the move over the grid
+        :param direction: direction of the move over the _grid
         """
+        initial_grid = self._grid
 
         if direction == UP:
-            self.traverse_grid((0, 0), OFFSETS[UP], self.height)
+            rotated_grid = rotate_ccw_matrix(self._grid)
+            rotated_grid = [merge(row) for row in rotated_grid]
+            self._grid = rotate_cw_matrix(rotated_grid)
+
         elif direction == DOWN:
-            self.traverse_grid((0, 0), OFFSETS[DOWN], self.height)
+            rotated_grid = rotate_cw_matrix(self._grid)
+            rotated_grid = [merge(row) for row in rotated_grid]
+            self._grid = rotate_ccw_matrix(rotated_grid)
+
         elif direction == LEFT:
-            self.traverse_grid((0, 0), OFFSETS[LEFT], self.width)
+            self._grid = [merge(row) for row in self._grid]
+
         elif direction == RIGHT:
-            self.traverse_grid((0, 0), OFFSETS[RIGHT], self.width)
+            self._grid = [to_right(merge(row)) for row in self._grid]
+
+        if initial_grid != self._grid:
+            self.new_tile()
 
     def new_tile(self):
         """
@@ -136,20 +196,17 @@ class TwentyFortyEight:
         square.  The tile should be 2 90% of the time and
         4 10% of the time.
         """
+        if not self.is_grid_full():
+            random_num = random.randint(0, 10)
+            new_tile_value = 4 if random_num > 9 else 2
 
-        random_num = random.randint(0, 10)
-        new_tile_value = 4 if random_num > 9 else 2
+            while True:
+                rand_column_idx = random.randrange(0, self._width)
+                rand_row_idx = random.randrange(0, self._height)
 
-        rand_tile_column_idx = random.randrange(0, self.width)
-        rand_tile_row_idx = random.randrange(0, self.height)
-        rand_tile = self.get_tile(rand_tile_row_idx, rand_tile_column_idx)
-
-        while rand_tile != 0:
-            rand_tile_column_idx = random.randrange(0, self.width)
-            rand_tile_row_idx = random.randrange(0, self.height)
-            rand_tile = self.get_tile(rand_tile_row_idx, rand_tile_column_idx)
-
-        self.set_tile(rand_tile_row_idx, rand_tile_column_idx, new_tile_value)
+                if self.get_tile(rand_row_idx, rand_column_idx) == 0:
+                    self.set_tile(rand_row_idx, rand_column_idx, new_tile_value)
+                    break
 
     def set_tile(self, row, col, value):
         """
@@ -158,7 +215,7 @@ class TwentyFortyEight:
         :param col: column index
         :param row: row index
         """
-        self.grid[row][col] = value
+        self._grid[row][col] = value
 
     def get_tile(self, row, col):
         """
@@ -166,20 +223,36 @@ class TwentyFortyEight:
         :param col: column index
         :param row: row index
         """
-        return self.grid[row][col]
+        return self._grid[row][col]
 
-    def traverse_grid(self, start_cell, direction, num_steps):
+    def is_grid_full(self):
         """
-        Function that iterates through the cells in a grid in a linear direction
-        :param num_steps: number of iterations
-        :param direction: tuple that contains difference between consecutive
-        cells in the traversal
-        :param start_cell: tuple(row, col) denoting the starting cell
+        Return if the grid has any empty (0) tile
         """
+        for row in range(self._height):
+            for col in range(self._width):
+                if self._grid[row][col] == 0:
+                    return False
+        return True
 
-        for step in range(num_steps):
-            row = start_cell[0] + step * direction[0]
-            col = start_cell[1] + step * direction[1]
 
+game = TwentyFortyEight(4, 4)
+print game
 
-poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
+print "\n\nUP"
+game.move(UP)
+print game
+
+print "\n\nDOWN"
+game.move(DOWN)
+print game
+
+print "\n\nRIGHT"
+game.move(RIGHT)
+print game
+
+print "\n\nLEFT"
+game.move(LEFT)
+print game
+
+# poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
