@@ -3,6 +3,7 @@ Clone of 2048 game.
 """
 
 import random
+import poc_2048_gui
 
 # Directions, DO NOT MODIFY
 UP = 1
@@ -60,37 +61,6 @@ def shift(array):
         array.append(0)
 
     return array
-
-
-def to_right(vector):
-    """
-    Anchor non zero numbers in a MERGED vector to the right side
-    :param vector: initial vector
-    :return: vector with non zeros at right side
-    """
-    if has_non_zero(vector):
-        new_vector = list(vector)
-        while new_vector[0] != 0:
-            aux = new_vector.pop(0)
-            new_vector.append(aux)
-        return new_vector
-    return vector
-
-
-def has_non_zero(vector):
-    """
-    Returns saying if the input vector has an element > 0
-    :param vector: initial vector
-    :return: condition result
-    """
-    if len(vector) == 0:
-        return False
-
-    for elem in vector:
-        if elem != 0:
-            return True
-
-    return False
 
 
 def rotate_cw_matrix(matrix):
@@ -169,7 +139,7 @@ class TwentyFortyEight:
         tiles moved.
         :param direction: direction of the move over the _grid
         """
-        initial_grid = self._grid
+        initial_grid = list(self._grid)
 
         if direction == UP:
             rotated_grid = rotate_ccw_matrix(self._grid)
@@ -185,7 +155,7 @@ class TwentyFortyEight:
             self._grid = [merge(row) for row in self._grid]
 
         elif direction == RIGHT:
-            self._grid = [to_right(merge(row)) for row in self._grid]
+            self._grid = [merge(row[::-1])[::-1] for row in self._grid]
 
         if initial_grid != self._grid:
             self.new_tile()
@@ -255,4 +225,4 @@ print "\n\nLEFT"
 game.move(LEFT)
 print game
 
-# poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
+poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
