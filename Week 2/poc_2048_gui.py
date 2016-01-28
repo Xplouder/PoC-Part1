@@ -8,10 +8,10 @@ except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
 import math
 
-import codeskulptor
+import CodeSkulptorHelper
 
 # Tile Images
-IMAGENAME = "assets_2048.png"
+IMAGE_NAME = "assets_2048.png"
 TILE_SIZE = 100
 HALF_TILE_SIZE = TILE_SIZE / 2
 BORDER_SIZE = 45
@@ -31,16 +31,17 @@ class GUI:
     def __init__(self, game):
         self._rows = game.get_grid_height()
         self._cols = game.get_grid_width()
-        self._frame = simplegui.create_frame('2048',
-                                             self._cols * TILE_SIZE + 2 * BORDER_SIZE,
-                                             self._rows * TILE_SIZE + 2 * BORDER_SIZE)
+        self._frame = simplegui.create_frame('2048', self._cols * TILE_SIZE +
+                                             2 * BORDER_SIZE,
+                                             self._rows * TILE_SIZE +
+                                             2 * BORDER_SIZE)
         self._frame.add_button('New Game', self.start)
         self._frame.set_keydown_handler(self.keydown)
         self._frame.set_draw_handler(self.draw)
         self._frame.set_canvas_background("#BCADA1")
         self._frame.start()
         self._game = game
-        url = codeskulptor.file2url(IMAGENAME)
+        url = CodeSkulptorHelper.file2url(IMAGE_NAME)
         self._tiles = simplegui.load_image(url)
         self._directions = {"up": UP, "down": DOWN,
                             "left": LEFT, "right": RIGHT}
@@ -48,6 +49,7 @@ class GUI:
     def keydown(self, key):
         """
         Keydown handler
+        :param key:
         """
         for dirstr, dirval in self._directions.items():
             if key == simplegui.KEY_MAP[dirstr]:
@@ -57,6 +59,7 @@ class GUI:
     def draw(self, canvas):
         """
         Draw handler
+        :param canvas:
         """
         for row in range(self._rows):
             for col in range(self._cols):
@@ -84,6 +87,7 @@ class GUI:
 def run_gui(game):
     """
     Instantiate and run the GUI.
+    :param game:
     """
     gui = GUI(game)
     gui.start()
