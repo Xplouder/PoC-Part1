@@ -7,7 +7,6 @@ try:
 except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
 import math
-
 import CodeSkulptorHelper
 
 # Tile Images
@@ -31,7 +30,8 @@ class GUI:
     def __init__(self, game):
         self._rows = game.get_grid_height()
         self._cols = game.get_grid_width()
-        self._frame = simplegui.create_frame('2048', self._cols * TILE_SIZE +
+        self._frame = simplegui.create_frame('2048',
+                                             self._cols * TILE_SIZE +
                                              2 * BORDER_SIZE,
                                              self._rows * TILE_SIZE +
                                              2 * BORDER_SIZE)
@@ -73,8 +73,10 @@ class GUI:
                                    HALF_TILE_SIZE],
                                   [TILE_SIZE, TILE_SIZE],
                                   [
-                                      col * TILE_SIZE + HALF_TILE_SIZE + BORDER_SIZE,
-                                      row * TILE_SIZE + HALF_TILE_SIZE + BORDER_SIZE],
+                                      col * TILE_SIZE +
+                                      HALF_TILE_SIZE + BORDER_SIZE,
+                                      row * TILE_SIZE +
+                                      HALF_TILE_SIZE + BORDER_SIZE],
                                   [TILE_SIZE, TILE_SIZE])
 
     def start(self):
@@ -87,7 +89,7 @@ class GUI:
 def run_gui(game):
     """
     Instantiate and run the GUI.
-    :param game:
+    :param game: game object
     """
     gui = GUI(game)
     gui.start()
