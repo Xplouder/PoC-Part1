@@ -1,4 +1,4 @@
-# PoC-Part1 - Mini-Projects
+# Principles of Computing (Part 1) - Mini-Projects
 
 Code written by **João Silva** following the lectured in:
 
