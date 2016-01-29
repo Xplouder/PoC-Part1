@@ -72,7 +72,7 @@ def get_best_move(board, scores):
         for row in range(board.get_dim()):
             for col in range(board.get_dim()):
                 temp = scores[row][col]
-                if temp != provided.EMPTY:
+                if board.square(row, col) == provided.EMPTY:
                     if temp > max_value:
                         max_coords = []
                         max_value = temp
