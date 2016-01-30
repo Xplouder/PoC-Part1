@@ -10,7 +10,7 @@ import poc_ttt_provided as provided
 class MyTestCase(unittest.TestCase):
     def test_trial(self):
         counter = 0
-        runs = 10000
+        runs = 1000
 
         initial_board = [[provided.EMPTY, provided.EMPTY, provided.EMPTY],
                          [provided.EMPTY, provided.EMPTY, provided.EMPTY],

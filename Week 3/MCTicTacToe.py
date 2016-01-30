@@ -52,24 +52,24 @@ def mc_update_scores(scores, board, player):
             else:
                 scores[row][col] -= SCORE_OTHER
 
-                # game_result = board.check_win()
-                # if game_result == provided.DRAW:
-                #     return
-                #
-                # for row in range(board.get_dim()):
-                #     for col in range(board.get_dim()):
-                #         square_value = board.square(row, col)
-                #         if square_value == provided.EMPTY:
-                #             continue
-                #
-                #         if game_result == player and square_value == player:
-                #             scores[row][col] += SCORE_CURRENT
-                #         elif game_result == player and not square_value == player:
-                #             scores[row][col] -= SCORE_OTHER
-                #         elif not game_result == player and square_value == player:
-                #             scores[row][col] -= SCORE_CURRENT
-                #         else:
-                #             scores[row][col] += SCORE_OTHER
+    # game_result = board.check_win()
+    # if game_result == provided.DRAW:
+    #     return
+    #
+    # for row in range(board.get_dim()):
+    #     for col in range(board.get_dim()):
+    #         square_value = board.square(row, col)
+    #         if square_value == provided.EMPTY:
+    #             continue
+    #
+    #         if game_result == player and square_value == player:
+    #             scores[row][col] += SCORE_CURRENT
+    #         elif game_result == player and not square_value == player:
+    #             scores[row][col] -= SCORE_OTHER
+    #         elif not game_result == player and square_value == player:
+    #             scores[row][col] -= SCORE_CURRENT
+    #         else:
+    #             scores[row][col] += SCORE_OTHER
 
 
 def get_best_move(board, scores):
@@ -119,7 +119,6 @@ def mc_move(board, player, trials):
         mc_update_scores(scores, clone, player)
 
     return get_best_move(board, scores)
-
 
 # Test game with the console or the GUI.  Uncomment whichever
 # you prefer.  Both should be commented out when you submit
