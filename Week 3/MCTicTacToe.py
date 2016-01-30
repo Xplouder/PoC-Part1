@@ -9,7 +9,7 @@ import poc_ttt_provided as provided
 # Constants for Monte Carlo simulator
 # You may change the values of these constants as desired, but
 # do not change their names.
-NTRIALS = 1  # Number of trials to run
+NTRIALS = 200  # Number of trials to run
 SCORE_CURRENT = 1.0  # Score for squares played by the current player
 SCORE_OTHER = 1.0  # Score for squares played by the other player
 
@@ -37,50 +37,68 @@ def mc_update_scores(scores, board, player):
     :param scores: grid of scores (a list of lists) with the same dimensions
     as the Tic-Tac-Toe board
     """
-    if scores is None:
-        dim = board.get_dim()
-        scores = [[0 for _ in dim] for _ in dim]
+    winner = board.check_win()
+    if winner == provided.DRAW:
+        return
 
-    result = board.check_win()
-    if result != provided.DRAW:
-        for row in range(board.get_dim()):
-            for col in range(board.get_dim()):
-                cell_value = board.square(row, col)
-                if cell_value == result:
-                    scores[row][col] += 1
-                elif cell_value == provided.EMPTY:
-                    continue
-                else:
-                    scores[row][col] -= 1
+    for row in range(board.get_dim()):
+        for col in range(board.get_dim()):
+            cell_value = board.square(row, col)
+            if cell_value == provided.EMPTY:
+                continue
+
+            if cell_value == winner:
+                scores[row][col] += SCORE_CURRENT
+            else:
+                scores[row][col] -= SCORE_OTHER
+
+                # game_result = board.check_win()
+                # if game_result == provided.DRAW:
+                #     return
+                #
+                # for row in range(board.get_dim()):
+                #     for col in range(board.get_dim()):
+                #         square_value = board.square(row, col)
+                #         if square_value == provided.EMPTY:
+                #             continue
+                #
+                #         if game_result == player and square_value == player:
+                #             scores[row][col] += SCORE_CURRENT
+                #         elif game_result == player and not square_value == player:
+                #             scores[row][col] -= SCORE_OTHER
+                #         elif not game_result == player and square_value == player:
+                #             scores[row][col] -= SCORE_CURRENT
+                #         else:
+                #             scores[row][col] += SCORE_OTHER
 
 
 def get_best_move(board, scores):
     """
     This function takes a current board and a grid of scores. The function
     find all of the empty squares with the maximum score and randomly
-    return one of them as a (row, column) tuple. It is an error to call this
-    function with a board that has no empty squares (there is no possible next
-    move), so your function may do whatever it wants in that case. The case
-    where the board is full will not be tested.
+    return one of them as a (row, column) tuple.
     :param scores:
     :param board:
     """
-    max_coords = []
-    max_value = 0
+    max_squares_list = []
+    # simulate min integer possible in python without sys lib
+    max_value = -99999
+    empty_squares_list = board.get_empty_squares()
 
-    if len(board.get_empty_squares()) > 0:
-        for row in range(board.get_dim()):
-            for col in range(board.get_dim()):
-                temp = scores[row][col]
-                if board.square(row, col) == provided.EMPTY:
-                    if temp > max_value:
-                        max_coords = []
-                        max_value = temp
-                        max_coords.append((row, col))
-                    elif temp == max_value:
-                        max_coords.append((row, col))
+    # only happen when the board is full, however its not fully protected
+    if len(empty_squares_list) == 0:
+        # only happen when the board is full, however its not fully protected
+        return None
 
-    return random.choice(max_coords)
+    for empty_square in empty_squares_list:
+        temp = scores[empty_square[0]][empty_square[1]]
+        if temp > max_value:
+            max_squares_list = []
+            max_value = temp
+            max_squares_list.append(empty_square)
+        elif temp == max_value:
+            max_squares_list.append(empty_square)
+    return random.choice(max_squares_list)
 
 
 def mc_move(board, player, trials):
@@ -92,7 +110,16 @@ def mc_move(board, player, trials):
     :param player:
     :param board:
     """
-    return random.choice(board.get_empty_squares())
+    dim = board.get_dim()
+    scores = [[0 for _ in range(dim)] for _ in range(dim)]
+
+    for _ in range(trials):
+        clone = board.clone()
+        mc_trial(clone, player)
+        mc_update_scores(scores, clone, player)
+
+    return get_best_move(board, scores)
+
 
 # Test game with the console or the GUI.  Uncomment whichever
 # you prefer.  Both should be commented out when you submit
