@@ -22,10 +22,23 @@ def mc_trial(board, player):
     :param player:
     :param board:
     """
-    while board.check_win() is None:
-        rand_empty_cell = random.choice(board.get_empty_squares())
-        board.move(rand_empty_cell[0], rand_empty_cell[1], player)
-        provided.switch_player(player)
+    # while board.check_win() is None and len(board.get_empty_squares()) > 0:
+    #     rand_empty_cell = random.choice(board.get_empty_squares())
+    #     board.move(rand_empty_cell[0], rand_empty_cell[1], player)
+    #     provided.switch_player(player)
+
+    if board.check_win() is not None:
+        return
+    empty_squares = board.get_empty_squares()
+    rand_empty_square = empty_squares[random.randrange(len(empty_squares))]
+    board.move(rand_empty_square[0], rand_empty_square[1], player)
+    mc_trial(board, provided.switch_player(player))
+
+    # while board.check_win() is None:
+    #     empty_squares = board.get_empty_squares()
+    #     rand_empty_square = empty_squares[random.randrange(len(empty_squares))]
+    #     board.move(rand_empty_square[0], rand_empty_square[1], player)
+    #     provided.switch_player(player)
 
 
 def mc_update_scores(scores, board, player):
