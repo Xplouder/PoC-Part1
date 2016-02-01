@@ -3,7 +3,8 @@ Clone of 2048 game.
 """
 
 import random
-import poc_2048_gui
+
+from aux import poc_2048_gui as poc_2048_gui
 
 # Directions, DO NOT MODIFY
 UP = 1
@@ -206,23 +207,23 @@ class TwentyFortyEight:
         return True
 
 
-game = TwentyFortyEight(4, 4)
-print game
-
-print "\n\nUP"
-game.move(UP)
-print game
-
-print "\n\nDOWN"
-game.move(DOWN)
-print game
-
-print "\n\nRIGHT"
-game.move(RIGHT)
-print game
-
-print "\n\nLEFT"
-game.move(LEFT)
-print game
-
-poc_2048_gui.run_gui(TwentyFortyEight(4, 4))
+# game = TwentyFortyEight(4, 4)
+# print game
+#
+# print "\n\nUP"
+# game.move(UP)
+# print game
+#
+# print "\n\nDOWN"
+# game.move(DOWN)
+# print game
+#
+# print "\n\nRIGHT"
+# game.move(RIGHT)
+# print game
+#
+# print "\n\nLEFT"
+# game.move(LEFT)
+# print game
+#
+# poc_2048_gui.run_gui(TwentyFortyEight(4, 4))

@@ -3,11 +3,13 @@ Unit Tests for Monte Carlo Tic-Tac-Toe
 """
 
 import unittest
+
+from aux import poc_ttt_provided as provided
+
 import MCTicTacToe
-import poc_ttt_provided as provided
 
 
-class MyTestCase(unittest.TestCase):
+class TestsMCTicTacToe(unittest.TestCase):
     def test_trial(self):
         counter = 0
         runs = 10000

@@ -4,7 +4,7 @@ Thomco's unit tests for 2048(Full)
 
 import random
 import unittest
-import twentyfortyeight as twenty_forty_eight
+import TwentyFortyEight as twenty_forty_eight
 
 # Directions, DO NOT MODIFY
 UP = 1
@@ -17,7 +17,7 @@ directions = {UP: 'up', DOWN: 'down', LEFT: 'left', RIGHT: 'right'}
 
 # Add test case for out of bounds index exception in set_tile, get_tile
 
-class TestTwentyFortyEight(unittest.TestCase):
+class TestsTwentyFortyEight(unittest.TestCase):
     def test_init_single(self):
 
         height = random.randrange(4, 12)

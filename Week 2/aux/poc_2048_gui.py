@@ -6,8 +6,11 @@ try:
     import simplegui
 except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
+try:
+    import codeskulptor
+except ImportError:
+    import SimpleGUICS2Pygame.codeskulptor as codeskulptor
 import math
-import CodeSkulptorHelper
 
 # Tile Images
 IMAGE_NAME = "assets_2048.png"
@@ -41,7 +44,7 @@ class GUI:
         self._frame.set_canvas_background("#BCADA1")
         self._frame.start()
         self._game = game
-        url = CodeSkulptorHelper.file2url(IMAGE_NAME)
+        url = codeskulptor.file2url(IMAGE_NAME)
         self._tiles = simplegui.load_image(url)
         self._directions = {"up": UP, "down": DOWN,
                             "left": LEFT, "right": RIGHT}

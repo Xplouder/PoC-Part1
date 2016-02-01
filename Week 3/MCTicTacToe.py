@@ -3,8 +3,9 @@ Monte Carlo Tic-Tac-Toe Player
 """
 
 import random
-import poc_ttt_gui
-import poc_ttt_provided as provided
+
+from aux import poc_ttt_gui
+from aux import poc_ttt_provided as provided
 
 # Constants for Monte Carlo simulator
 # You may change the values of these constants as desired, but
@@ -137,5 +138,5 @@ def mc_move(board, player, trials):
 # you prefer.  Both should be commented out when you submit
 # for testing to save time.
 
-# provided.play_game(mc_move, NTRIALS, False)
-# poc_ttt_gui.run_gui(3, provided.PLAYERX, mc_move, NTRIALS, False)
+provided.play_game(mc_move, NTRIALS, False)
+poc_ttt_gui.run_gui(3, provided.PLAYERX, mc_move, NTRIALS, False)
