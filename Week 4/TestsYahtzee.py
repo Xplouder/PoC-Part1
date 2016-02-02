@@ -51,6 +51,10 @@ class TestsYahtzee(unittest.TestCase):
         val = Yahtzee.score((4, 5))
         self.assertEqual(5, val)
 
+    def test_score3(self):
+        val = Yahtzee.score((3, 3, 3))
+        self.assertEqual(9, val)
+
     def test_strategy(self):
         val = Yahtzee.strategy((1,), 6)
         self.assertEqual(3.5, (), val)

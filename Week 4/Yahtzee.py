@@ -41,12 +41,21 @@ def score(hand):
     :param hand: full yahtzee hand
     :return an integer score
     """
-    sorted_hand = sorted(hand, reverse=True)
+    max_score = 0
+    die_face_score = 0
+    die_face = 0
 
-    iterate_val = None
-    for elem in sorted_hand:
-        iterate_val *= elem
-    return iterate_val
+    for elem in hand:
+        if elem > die_face:
+            die_face = elem
+            die_face_score = die_face
+        elif elem == die_face:
+            die_face_score += die_face
+
+        if die_face_score > max_score:
+            max_score = die_face_score
+
+    return max_score
 
 
 def expected_value(held_dice, num_die_sides, num_free_dice):
@@ -71,11 +80,11 @@ def gen_all_holds(hand):
     """
 
     all_holds = {()}
-    for i in range(len(hand) + 1):
-        all_holds.add(hand[:i])
-        all_holds.add(hand[i:])
+    for idx in range(len(hand) + 1):
+        all_holds.add(hand[:idx])
+        all_holds.add(hand[idx:])
 
-        temp = gen_all_sequences(hand, i)
+        temp = gen_all_sequences(hand, idx)
         for elem in temp:
             sorted_elem = tuple(sorted(elem))
             if has_valid_number_of_occurrences(hand, sorted_elem):
