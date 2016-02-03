@@ -67,7 +67,8 @@ def score(hand):
     for hand_elem in distinct_hand_elements:
         distinct_hand_elements[hand_elem] = hand.count(hand_elem) * hand_elem
 
-    return max(distinct_hand_elements.values())
+    return max(distinct_hand_elements.values()) if \
+        len(distinct_hand_elements.values()) > 0 else 0
 
 
 def expected_value(held_dice, num_die_sides, num_free_dice):
