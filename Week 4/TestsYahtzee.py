@@ -6,9 +6,13 @@ import Yahtzee
 
 
 class TestsYahtzee(unittest.TestCase):
-    def test_expected_value(self):
+    def test_expected_value1(self):
         val = Yahtzee.expected_value((2, 2), 6, 2)
-        self.assertEqual(5.83333333333, val)
+        self.assertAlmostEqual(5.83333333333, val)
+
+    def test_expected_value2(self):
+        val = Yahtzee.expected_value((2, 2), 2, 2)
+        self.assertAlmostEqual(6, val)
 
     def test_gen_all_holds1(self):
         val = Yahtzee.gen_all_holds((1,))

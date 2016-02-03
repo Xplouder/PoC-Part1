@@ -81,13 +81,14 @@ def expected_value(held_dice, num_die_sides, num_free_dice):
     :param num_free_dice: dice that you will hold
     :return a floating point expected value
     """
-    total = score(held_dice)
-    counter = 1
+    total = 0.0
+    counter = 0.0
+    die_sides_list = range(1, num_die_sides+1, +1)
 
-    for turn in range(num_free_dice):
-        for possible_hand in gen_all_sequences(held_dice, turn):
-            total += score(possible_hand)
-            counter += 1
+    for combination in gen_all_sequences(die_sides_list, num_free_dice):
+        total += score(combination + held_dice)
+        counter += 1
+
     return total / counter
 
 
