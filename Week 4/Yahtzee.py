@@ -41,21 +41,33 @@ def score(hand):
     :param hand: full yahtzee hand
     :return an integer score
     """
-    max_score = 0
-    die_face_score = 0
-    die_face = 0
 
-    for elem in hand:
-        if elem > die_face:
-            die_face = elem
-            die_face_score = die_face
-        elif elem == die_face:
-            die_face_score += die_face
+    # # Initial solution implementation using a single loop
+    # max_score = 0
+    # die_face_score = 0
+    # die_face = 0
+    #
+    # for elem in hand:
+    #     if elem > die_face:
+    #         die_face = elem
+    #         die_face_score = die_face
+    #     elif elem == die_face:
+    #         die_face_score += die_face
+    #
+    #     if die_face_score > max_score:
+    #         max_score = die_face_score
+    #
+    # return max_score
 
-        if die_face_score > max_score:
-            max_score = die_face_score
+    # Implementation using a dictionary however with more resources cost
+    distinct_hand_elements = {}
+    for hand_elem in hand:
+        distinct_hand_elements[hand_elem] = 0
 
-    return max_score
+    for hand_elem in distinct_hand_elements:
+        distinct_hand_elements[hand_elem] = hand.count(hand_elem) * hand_elem
+
+    return max(distinct_hand_elements.values())
 
 
 def expected_value(held_dice, num_die_sides, num_free_dice):
@@ -63,12 +75,19 @@ def expected_value(held_dice, num_die_sides, num_free_dice):
     Compute the expected value based on held_dice given that there
     are num_free_dice to be rolled, each with num_die_sides.
 
-    :param num_free_dice: dice that you will hold
-    :param num_die_sides: number of sides on each die
     :param held_dice: number of dice to be rolled
+    :param num_die_sides: number of sides on each die
+    :param num_free_dice: dice that you will hold
     :return a floating point expected value
     """
-    return 0.0
+    total = score(held_dice)
+    counter = 1
+
+    for turn in range(num_free_dice):
+        for possible_hand in gen_all_sequences(held_dice, turn):
+            total += score(possible_hand)
+            counter += 1
+    return total / counter
 
 
 def gen_all_holds(hand):
