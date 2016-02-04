@@ -123,7 +123,15 @@ def strategy(hand, num_die_sides):
     :return a tuple where the first element is the expected score and the second
      element is a tuple of the dice to hold
     """
-    return 0.0, ()
+    max_hold = set()
+    max_expected_value = float("-inf")
+    all_holds = gen_all_holds(hand)
+    for hold in all_holds:
+        aux = expected_value(hold, num_die_sides, len(hand) - len(hold))
+        if aux > max_expected_value:
+            max_expected_value = aux
+            max_hold = hold
+    return max_expected_value, max_hold
 
 
 def run_example():
@@ -149,9 +157,5 @@ def has_valid_number_of_occurrences(original, vector):
         if original.count(hand_elem) < vector.count(hand_elem):
             return False
     return True
-
-# run_example()
-
-# print gen_all_sequences((1, 2, 3, 4, 5, 6), 5)
 
 # poc_holds_testsuite.run_suite(gen_all_holds)

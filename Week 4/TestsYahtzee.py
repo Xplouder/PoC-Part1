@@ -47,6 +47,27 @@ class TestsYahtzee(unittest.TestCase):
             {(2, 6), (4, 6), (6, 6), (2,), (2, 4, 6), (4,), (2, 4, 6, 6), (),
              (6,), (2, 6, 6), (4, 6, 6), (2, 4)}, val)
 
+    def test_gen_all_holds8(self):
+        val = Yahtzee.gen_all_holds(tuple([]))
+        self.assertEqual({()}, val)
+
+    def test_gen_all_holds9(self):
+        val = Yahtzee.gen_all_holds(tuple([2, 4]))
+        self.assertEqual({(), (2,), (4,), (2, 4)}, val)
+
+    def test_gen_all_holds10(self):
+        val = Yahtzee.gen_all_holds(tuple((3, 3, 3)))
+        self.assertEqual({(), (3,), (3, 3), (3, 3, 3)}, val)
+
+    def test_gen_all_holds11(self):
+        val = Yahtzee.gen_all_holds(tuple((1, 2, 2)))
+        self.assertEqual({(), (1,), (2,), (1, 2), (2, 2), (1, 2, 2)}, val)
+
+    def test_gen_all_holds12(self):
+        val = Yahtzee.gen_all_holds(tuple([2, 3, 6]))
+        self.assertEqual(
+            {(), (2,), (3,), (6,), (2, 3), (2, 6), (3, 6), (2, 3, 6)}, val)
+
     def test_score1(self):
         val = Yahtzee.score((1,))
         self.assertEqual(1, val)
@@ -61,7 +82,7 @@ class TestsYahtzee(unittest.TestCase):
 
     def test_strategy(self):
         val = Yahtzee.strategy((1,), 6)
-        self.assertEqual(3.5, (), val)
+        self.assertEqual((3.5, ()), val)
 
 
 if __name__ == '__main__':
