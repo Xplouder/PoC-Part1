@@ -1,3 +1,4 @@
+# coding=utf-8
 """
 Cookie Clicker Simulator
 
@@ -33,7 +34,7 @@ class ClickerState:
         self._total_num_cookies = 0.0
         self._current_num_cookies = 0.0
         self._current_time = 0.0
-        self._current_CPS = 1.0
+        self._current_cps = 1.0
 
         # Tuple element:
         # (a time, an item that was bought at that time (or None),
@@ -46,7 +47,7 @@ class ClickerState:
         """
         return "Time: " + str(self._current_time) + \
                " Current Cookies: " + str(self._current_num_cookies) + \
-               " CPS: " + str(self._current_CPS) + \
+               " CPS: " + str(self._current_cps) + \
                " Total Cookies: " + str(self._total_num_cookies) + \
                " History (length: " + str(len(self._history)) + "): " + \
                str(self._history)
@@ -66,7 +67,7 @@ class ClickerState:
 
         Should return a float
         """
-        return self._current_CPS
+        return self._current_cps
 
     def get_time(self):
         """
@@ -103,7 +104,7 @@ class ClickerState:
 
         diff = cookies - self._current_num_cookies
         # time rounded up
-        time = math.ceil(diff / self._current_CPS)
+        time = math.ceil(diff / self._current_cps)
         return time
 
     def wait(self, time):
@@ -115,7 +116,7 @@ class ClickerState:
         """
         if time > 0.0:
             self._current_time += time
-            generated_cookies = time * self._current_CPS
+            generated_cookies = time * self._current_cps
             self._current_num_cookies += generated_cookies
             self._total_num_cookies += generated_cookies
 
@@ -132,7 +133,7 @@ class ClickerState:
             return
 
         self._current_num_cookies -= cost
-        self._current_CPS += additional_cps
+        self._current_cps += additional_cps
         item = (self._current_time, item_name, cost, self._total_num_cookies)
         self._history.append(item)
 
@@ -146,9 +147,39 @@ def simulate_clicker(build_info, duration, strategy):
     :param duration:
     :param strategy:
     """
+    build_info_clone = build_info.clone()
+    clicker_state = ClickerState()
 
-    # Replace with your code
-    return ClickerState()
+    while clicker_state.get_time() <= duration:
+        time_left = duration - clicker_state.get_time()
+
+        # strategy(cookies, cps, history, time_left, build_info)
+        item = strategy(clicker_state.get_cookies(),
+                        clicker_state.get_cps(),
+                        clicker_state.get_history(),
+                        time_left,
+                        build_info_clone)
+
+        if item is None:
+            break
+
+        # {"Cursor": [15.0, 0.1], ...
+        elapse_time = clicker_state.time_until(build_info_clone.get_cost(item))
+
+        if elapse_time > time_left:
+            break
+
+        clicker_state.wait(elapse_time)
+        clicker_state.buy_item(item,
+                               build_info_clone.get_cost(item),
+                               build_info_clone.get_cps(item))
+        build_info_clone.update_item(item)
+
+    time_left = duration - clicker_state.get_time()
+    if time_left > 0:
+        clicker_state.wait(time_left)
+
+    return clicker_state
 
 
 def strategy_cursor_broken(cookies, cps, history, time_left, build_info):
