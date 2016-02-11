@@ -4,14 +4,15 @@ Cookie Clicker Simulator Build Information
 
 BUILD_GROWTH = 1.15
 
+
 class BuildInfo:
     """
     Class to track build information.
     """
 
-    def __init__(self, build_info = None, growth_factor = BUILD_GROWTH):
+    def __init__(self, build_info=None, growth_factor=BUILD_GROWTH):
         self._build_growth = growth_factor
-        if build_info == None:
+        if build_info is None:
             self._info = {"Cursor": [15.0, 0.1],
                           "Grandma": [100.0, 0.5],
                           "Farm": [500.0, 4.0],
@@ -39,6 +40,7 @@ class BuildInfo:
         """
         Get the current cost of an item
         Will throw a KeyError exception if item is not in the build info.
+        :param item:
         """
         return self._info[item][0]
 
@@ -46,6 +48,7 @@ class BuildInfo:
         """
         Get the current CPS of an item
         Will throw a KeyError exception if item is not in the build info.
+        :param item:
         """
         return self._info[item][1]
 
@@ -53,6 +56,7 @@ class BuildInfo:
         """
         Update the cost of an item by the growth factor
         Will throw a KeyError exception if item is not in the build info.
+        :param item:
         """
         cost, cps = self._info[item]
         self._info[item] = [cost * self._build_growth, cps]
