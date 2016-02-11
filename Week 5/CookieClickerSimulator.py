@@ -7,6 +7,8 @@ Cookie Clicker Simulator
 """
 
 # Used to increase the timeout, if necessary
+import math
+
 try:
     import codeskulptor
     import simpleplot
@@ -18,7 +20,6 @@ import poc_clicker_provided as provided
 
 codeskulptor.set_timeout(20)
 
-
 # Constants
 SIM_TIME = 10000000000.0
 
@@ -29,13 +30,26 @@ class ClickerState:
     """
 
     def __init__(self):
-        pass
+        self._total_num_cookies = 0.0
+        self._current_num_cookies = 0.0
+        self._current_time = 0.0
+        self._current_CPS = 1.0
+
+        # Tuple element:
+        # (a time, an item that was bought at that time (or None),
+        # cost of the item, the total number of cookies produced by that time)
+        self._history = [(0.0, None, 0.0, 0.0)]
 
     def __str__(self):
         """
         Return human readable state
         """
-        return "not yet implemented"
+        return "Time: " + str(self._current_time) + \
+               " Current Cookies: " + str(self._current_num_cookies) + \
+               " CPS: " + str(self._current_CPS) + \
+               " Total Cookies: " + str(self._total_num_cookies) + \
+               " History (length: " + str(len(self._history)) + "): " + \
+               str(self._history)
 
     def get_cookies(self):
         """
@@ -44,7 +58,7 @@ class ClickerState:
 
         Should return a float
         """
-        return 0.0
+        return self._current_num_cookies
 
     def get_cps(self):
         """
@@ -52,7 +66,7 @@ class ClickerState:
 
         Should return a float
         """
-        return 0.0
+        return self._current_CPS
 
     def get_time(self):
         """
@@ -60,7 +74,7 @@ class ClickerState:
 
         Should return a float
         """
-        return 0.0
+        return self._current_time
 
     def get_history(self):
         """
@@ -74,7 +88,7 @@ class ClickerState:
         Should return a copy of any internal data structures,
         so that they will not be modified outside of the class.
         """
-        return []
+        return list(self._history)
 
     def time_until(self, cookies):
         """
@@ -84,7 +98,13 @@ class ClickerState:
         Should return a float with no fractional part
         :param cookies:
         """
-        return 0.0
+        if self._current_num_cookies >= cookies:
+            return 0.0
+
+        diff = cookies - self._current_num_cookies
+        # time rounded up
+        time = math.ceil(diff / self._current_CPS)
+        return time
 
     def wait(self, time):
         """
@@ -93,7 +113,11 @@ class ClickerState:
         Should do nothing if time <= 0.0
         :param time:
         """
-        pass
+        if time > 0.0:
+            self._current_time += time
+            generated_cookies = time * self._current_CPS
+            self._current_num_cookies += generated_cookies
+            self._total_num_cookies += generated_cookies
 
     def buy_item(self, item_name, cost, additional_cps):
         """
@@ -104,7 +128,13 @@ class ClickerState:
         :param cost:
         :param additional_cps:
         """
-        pass
+        if self._current_num_cookies < cost:
+            return
+
+        self._current_num_cookies -= cost
+        self._current_CPS += additional_cps
+        item = (self._current_time, item_name, cost, self._total_num_cookies)
+        self._history.append(item)
 
 
 def simulate_clicker(build_info, duration, strategy):
@@ -222,5 +252,4 @@ def run():
     # run_strategy("Expensive", SIM_TIME, strategy_expensive)
     # run_strategy("Best", SIM_TIME, strategy_best)
 
-
-run()
+# run()
