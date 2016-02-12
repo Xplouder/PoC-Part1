@@ -274,44 +274,14 @@ def strategy_best(cookies, cps, history, time_left, build_info):
     :param build_info:
     """
 
-    possible_items = []
-    max_cookies = cookies + cps * time_left
+    all_items = build_info.build_items()
+    all_items_by_ratio = [(i, build_info.get_cost(i) * build_info.get_cps(i))
+                          for i in all_items]
+    all_items_by_ratio = sorted(all_items_by_ratio,
+                                key=lambda element: element[1],
+                                reverse=False)
 
-    # total_cost = sum([build_info.get_cost(item) for item
-    #                   in build_info.build_items()])
-    # total_cps = sum([build_info.get_cps(item) for item
-    #                  in build_info.build_items()])
-
-    # all_items = build_info.build_items()
-    # items_cost_normalized = [(i, build_info.get_cost(i)/total_cost) for i in all_items]
-    # items_cps_normalized = [(i, build_info.get_cps(i)/total_cps) for i in all_items]
-    #
-    # scored_items = []
-    # for index in range(len(all_items)):
-    #     score = items_cost_normalized
-
-    for item in build_info.build_items():
-        item_cost = build_info.get_cost(item)
-        if item_cost <= max_cookies:
-            possible_items.append(item)
-
-    if len(possible_items) == 0:
-        return None
-
-    total_cost = sum([build_info.get_cost(item) for item in possible_items])
-    total_cps = sum([build_info.get_cps(item) for item in possible_items])
-
-    scored_items = []
-    for item in possible_items:
-        score = get_item_score(item, build_info, total_cost, total_cps)
-        scored_items.append((item, score))
-
-    # sort items by score
-    scored_items = sorted(scored_items,
-                          key=lambda element: element[1],
-                          reverse=True)
-
-    return scored_items[0][0]
+    return all_items_by_ratio[0][0]
 
 
 def get_item_score(item, build_info, total_cost, total_cps):
@@ -342,43 +312,42 @@ def run_strategy(strategy_name, time, strategy):
     :param time:
     :param strategy:
     """
-    # state = simulate_clicker(provided.BuildInfo(), time, strategy)
-    # print strategy_name, ":", state
-    # print state._total_num_cookies
+    state = simulate_clicker(provided.BuildInfo(), time, strategy)
+    print strategy_name, ":", state
+    print state._total_num_cookies
 
     # Plot total cookies over time
 
     # Uncomment out the lines below to see a plot of total cookies vs. time
     # Be sure to allow popups, if you do want to see it
 
-    # history = state.get_history()
-    # history = [(item[0], item[3]) for item in history]
-    # simpleplot.plot_lines(strategy_name, 1000, 500, 'Time', 'Total Cookies',
-    #                       [history], True, _block=True)
+    history = state.get_history()
+    history = [(item[0], item[3]) for item in history]
+    simpleplot.plot_lines(strategy_name, 1000, 500, 'Time', 'Total Cookies',
+                          [history], True, _block=True)
 
 
-    global CPS_WEIGHT, COST_WEIGHT
-
-    best_cost_weight = COST_WEIGHT
-    best_cps_weight = CPS_WEIGHT
-    max_total_cookies = float("-inf")
-    max = 1000.0
-    lista = []
-
-    for val in range(99, int(max) + 1):
-        CPS_WEIGHT = val / max
-        COST_WEIGHT = (max - val) / max
-
-        state = simulate_clicker(provided.BuildInfo(), time, strategy)
-        lista.append(state._total_num_cookies)
-        if state._total_num_cookies > max_total_cookies:
-            max_total_cookies = state._total_num_cookies
-            best_cost_weight = COST_WEIGHT
-            best_cps_weight = CPS_WEIGHT
-
-
-    print best_cost_weight, best_cps_weight
-    print max_total_cookies
+    # global CPS_WEIGHT, COST_WEIGHT
+    #
+    # best_cost_weight = COST_WEIGHT
+    # best_cps_weight = CPS_WEIGHT
+    # max_total_cookies = float("-inf")
+    # max = 1000.0
+    # lista = []
+    #
+    # for val in range(99, int(max) + 1):
+    #     CPS_WEIGHT = val / max
+    #     COST_WEIGHT = (max - val) / max
+    #
+    #     state = simulate_clicker(provided.BuildInfo(), time, strategy)
+    #     lista.append(state._total_num_cookies)
+    #     if state._total_num_cookies > max_total_cookies:
+    #         max_total_cookies = state._total_num_cookies
+    #         best_cost_weight = COST_WEIGHT
+    #         best_cps_weight = CPS_WEIGHT
+    #
+    # print best_cost_weight, best_cps_weight
+    # print max_total_cookies
 
     # print
     # for i in lista:
