@@ -275,11 +275,43 @@ def strategy_best(cookies, cps, history, time_left, build_info):
     """
 
     all_items = build_info.build_items()
-    all_items_by_ratio = [(i, build_info.get_cost(i) / build_info.get_cps(i))
-                          for i in all_items]
+    max_cookies = cookies + cps * time_left
+    possible_items = []
+
+    for item in all_items:
+        item_cost = build_info.get_cost(item)
+        if item_cost <= max_cookies:
+            possible_items.append(item)
+
+    if len(possible_items) == 0:
+        return None
+
+    # total_cost = sum([build_info.get_cost(item) for item in possible_items])
+    # total_cps = sum([build_info.get_cps(item) for item in possible_items])
+    #
+    # all_items_normalized = [(item,
+    #                          build_info.get_cost(item) / total_cost,
+    #                          build_info.get_cps(item) / total_cps)
+    #                         for item in possible_items]
+    #
+    # all_items_by_ratio = [(item[0], item[2] * (1 / item[1]))
+    #                       for item in all_items_normalized]
+    #
+    # all_items_by_ratio = sorted(all_items_by_ratio,
+    #                             key=lambda element: element[1],
+    #                             reverse=True)
+
+    all_items_by_ratio = [(item, build_info.get_cps(item) *
+                           (1.0 / build_info.get_cost(item)))
+                          for item in possible_items]
+
     all_items_by_ratio = sorted(all_items_by_ratio,
                                 key=lambda element: element[1],
-                                reverse=False)
+                                reverse=True)
+
+    # for i in all_items_by_ratio:
+    #     print i
+    # print
 
     return all_items_by_ratio[0][0]
 
