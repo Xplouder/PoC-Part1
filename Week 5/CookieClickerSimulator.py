@@ -275,7 +275,7 @@ def strategy_best(cookies, cps, history, time_left, build_info):
     """
 
     all_items = build_info.build_items()
-    all_items_by_ratio = [(i, build_info.get_cost(i) * build_info.get_cps(i))
+    all_items_by_ratio = [(i, build_info.get_cost(i) / build_info.get_cps(i))
                           for i in all_items]
     all_items_by_ratio = sorted(all_items_by_ratio,
                                 key=lambda element: element[1],
