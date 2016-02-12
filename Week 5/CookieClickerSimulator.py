@@ -23,6 +23,8 @@ codeskulptor.set_timeout(20)
 
 # Constants
 SIM_TIME = 10000000000.0
+CPS_WEIGHT = 0
+COST_WEIGHT = 0
 
 
 class ClickerState:
@@ -225,7 +227,18 @@ def strategy_cheap(cookies, cps, history, time_left, build_info):
     :param time_left:
     :param build_info:
     """
-    return None
+    max_cookies = cookies + cps * time_left
+    items = build_info.build_items()
+    cheapest_item = None
+    for item in items:
+        item_cost = build_info.get_cost(item)
+        if item_cost <= max_cookies:
+            if cheapest_item is None:
+                cheapest_item = item
+            elif item_cost < build_info.get_cost(cheapest_item):
+                cheapest_item = item
+
+    return cheapest_item
 
 
 def strategy_expensive(cookies, cps, history, time_left, build_info):
@@ -237,7 +250,18 @@ def strategy_expensive(cookies, cps, history, time_left, build_info):
     :param time_left:
     :param build_info:
     """
-    return None
+    max_cookies = cookies + cps * time_left
+    items = build_info.build_items()
+    most_expensive_item = None
+    for item in items:
+        item_cost = build_info.get_cost(item)
+        if item_cost <= max_cookies:
+            if most_expensive_item is None:
+                most_expensive_item = item
+            elif item_cost > build_info.get_cost(most_expensive_item):
+                most_expensive_item = item
+
+    return most_expensive_item
 
 
 def strategy_best(cookies, cps, history, time_left, build_info):
@@ -249,7 +273,66 @@ def strategy_best(cookies, cps, history, time_left, build_info):
     :param time_left:
     :param build_info:
     """
-    return None
+
+    possible_items = []
+    max_cookies = cookies + cps * time_left
+
+    # total_cost = sum([build_info.get_cost(item) for item
+    #                   in build_info.build_items()])
+    # total_cps = sum([build_info.get_cps(item) for item
+    #                  in build_info.build_items()])
+
+    # all_items = build_info.build_items()
+    # items_cost_normalized = [(i, build_info.get_cost(i)/total_cost) for i in all_items]
+    # items_cps_normalized = [(i, build_info.get_cps(i)/total_cps) for i in all_items]
+    #
+    # scored_items = []
+    # for index in range(len(all_items)):
+    #     score = items_cost_normalized
+
+    for item in build_info.build_items():
+        item_cost = build_info.get_cost(item)
+        if item_cost <= max_cookies:
+            possible_items.append(item)
+
+    if len(possible_items) == 0:
+        return None
+
+    total_cost = sum([build_info.get_cost(item) for item in possible_items])
+    total_cps = sum([build_info.get_cps(item) for item in possible_items])
+
+    scored_items = []
+    for item in possible_items:
+        score = get_item_score(item, build_info, total_cost, total_cps)
+        scored_items.append((item, score))
+
+    # sort items by score
+    scored_items = sorted(scored_items,
+                          key=lambda element: element[1],
+                          reverse=True)
+
+    return scored_items[0][0]
+
+
+def get_item_score(item, build_info, total_cost, total_cps):
+    """
+    Scores The item based on his attributes and the defined weights
+    :param item:
+    :param build_info:
+    :param total_cost:
+    :param total_cps:
+    """
+    cps_weight = 0.5
+    cost_weight = 0.5
+
+    item_cps = build_info.get_cps(item)
+    item_cost = build_info.get_cost(item)
+
+    # return cps_weight * (item_cps / total_cps) + \
+    #        cost_weight * (1.0 / (item_cost / total_cost))
+
+    return CPS_WEIGHT * (item_cps / total_cps) + \
+           COST_WEIGHT * (1.0 / (item_cost / total_cost))
 
 
 def run_strategy(strategy_name, time, strategy):
@@ -259,8 +342,9 @@ def run_strategy(strategy_name, time, strategy):
     :param time:
     :param strategy:
     """
-    state = simulate_clicker(provided.BuildInfo(), time, strategy)
-    print strategy_name, ":", state
+    # state = simulate_clicker(provided.BuildInfo(), time, strategy)
+    # print strategy_name, ":", state
+    # print state._total_num_cookies
 
     # Plot total cookies over time
 
@@ -269,18 +353,48 @@ def run_strategy(strategy_name, time, strategy):
 
     # history = state.get_history()
     # history = [(item[0], item[3]) for item in history]
-    # simpleplot.plot_lines(strategy_name, 1000, 400, 'Time', 'Total Cookies', [history], True)
+    # simpleplot.plot_lines(strategy_name, 1000, 500, 'Time', 'Total Cookies',
+    #                       [history], True, _block=True)
+
+
+    global CPS_WEIGHT, COST_WEIGHT
+
+    best_cost_weight = COST_WEIGHT
+    best_cps_weight = CPS_WEIGHT
+    max_total_cookies = float("-inf")
+    max = 1000.0
+    lista = []
+
+    for val in range(99, int(max) + 1):
+        CPS_WEIGHT = val / max
+        COST_WEIGHT = (max - val) / max
+
+        state = simulate_clicker(provided.BuildInfo(), time, strategy)
+        lista.append(state._total_num_cookies)
+        if state._total_num_cookies > max_total_cookies:
+            max_total_cookies = state._total_num_cookies
+            best_cost_weight = COST_WEIGHT
+            best_cps_weight = CPS_WEIGHT
+
+
+    print best_cost_weight, best_cps_weight
+    print max_total_cookies
+
+    # print
+    # for i in lista:
+    #     print i
 
 
 def run():
     """
     Run the simulator.
     """
-    run_strategy("Cursor", SIM_TIME, strategy_cursor_broken)
+    # run_strategy("Cursor", SIM_TIME, strategy_cursor_broken)
 
     # Add calls to run_strategy to run additional strategies
     # run_strategy("Cheap", SIM_TIME, strategy_cheap)
     # run_strategy("Expensive", SIM_TIME, strategy_expensive)
-    # run_strategy("Best", SIM_TIME, strategy_best)
+    run_strategy("Best", SIM_TIME, strategy_best)
 
-# run()
+
+run()

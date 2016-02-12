@@ -88,6 +88,46 @@ class TestsCookieClickerSimulator(unittest.TestCase):
         self.assertAlmostEqual(16.1, result.get_cps())
         self.assertAlmostEqual(153308849166.0, round(result._total_num_cookies))
 
+    def test_strategy_cheap1(self):
+        build_info = provided.BuildInfo({'A': [5.0, 1.0],
+                                         'C': [50000.0, 3.0],
+                                         'B': [500.0, 2.0]},
+                                        1.15)
+
+        result = CookieClickerSimulator.strategy_cheap(500000.0,
+                                                       1.0,
+                                                       [(0.0, None, 0.0, 0.0)],
+                                                       5.0,
+                                                       build_info)
+        self.assertEqual('A', result)
+
+    def test_strategy_cheap2(self):
+        build_info = provided.BuildInfo({'A': [5.0, 1.0],
+                                         'C': [50000.0, 3.0],
+                                         'B': [500.0, 2.0]},
+                                        1.15)
+
+        result = CookieClickerSimulator.strategy_cheap(2.0,
+                                                       1.0,
+                                                       [(0.0, None, 0.0, 0.0)],
+                                                       1.0,
+                                                       build_info)
+        self.assertEqual(None, result)
+
+    def test_strategy_expensive(self):
+        build_info = provided.BuildInfo({'A': [5.0, 1.0],
+                                         'C': [50000.0, 3.0],
+                                         'B': [500.0, 2.0]},
+                                        1.15)
+
+        result = CookieClickerSimulator.strategy_expensive(500000.0,
+                                                           1.0,
+                                                           [(0.0, None, 0.0,
+                                                             0.0)],
+                                                           5.0,
+                                                           build_info)
+        self.assertEqual('C', result)
+
 
 if __name__ == '__main__':
     unittest.main()
